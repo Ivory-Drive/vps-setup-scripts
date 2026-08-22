@@ -209,7 +209,29 @@ sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch
 sudo apt update
 sudo apt install -y fastfetch
 
-# Красивый prompt
+# --- КАСТОМИЗАЦИЯ BASHRC ---
+# 1. Настройка истории
+cat >> ~/.bashrc <<'EOR'
+# Увеличиваем размер истории
+HISTSIZE=1000
+HISTFILESIZE=2000
+# Добавляем временные метки
+HISTTIMEFORMAT="%d-%m-%Y %T "
+# Игнорируем дубликаты и команды с пробелом
+HISTCONTROL=ignoreboth
+# Добавляем новые команды в конец файла истории
+shopt -s histappend
+EOR
+
+# 2. Алиасы
+cat >> ~/.bashrc <<'EOR'
+# Интерактивное удаление
+alias rm='rm -vi'
+# Быстрая проверка скорости
+alias speedtest="curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -"
+EOR
+
+# 3. Кастомный промпт
 cat > ~/.bash_prompt <<'EOP'
 BRACKET_COLOR="\[\033[38;5;35m\]"
 CLOCK_COLOR="\[\033[38;5;33m\]"
@@ -225,13 +247,11 @@ END_CHARACTER="|"
 tty -s && export PS1="$LINE_COLOR$LINE_UPPER_CORNER$LINE_STRAIGHT$LINE_STRAIGHT$BRACKET_COLOR[$CLOCK_COLOR\t$BRACKET_COLOR]$LINE_COLOR$LINE_STRAIGHT$BRACKET_COLOR[$JOB_COLOR\j$BRACKET_COLOR]$LINE_COLOR$LINE_STRAIGHT$BRACKET_COLOR[\H:\]$PATH_COLOR\w$BRACKET_COLOR]\n$LINE_COLOR$LINE_BOTTOM_CORNER$LINE_STRAIGHT$LINE_BOTTOM$END_CHARACTER\[$(tput sgr0)\] "
 EOP
 
-if ! grep -q "source ~/.bash_prompt" ~/.bashrc; then
-    echo "source ~/.bash_prompt" >> ~/.bashrc
-fi
+# Подключаем кастомный промпт
+echo "source ~/.bash_prompt" >> ~/.bashrc
 
-if ! grep -q "fastfetch" ~/.bashrc; then
-    echo "fastfetch" >> ~/.bashrc
-fi
+# 4. Запуск fastfetch при входе
+echo "fastfetch" >> ~/.bashrc
 
 echo "✅ Финальные настройки завершены!"
 EOF
